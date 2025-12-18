@@ -8,7 +8,7 @@ export const LLMController = new Elysia().get("/", () => new Response('Bun!')).g
     return new Response(body); 
   }).get("/chat/:query", async (req) => {
     const {query} = req.params;
-    const llm = new LLM(PROVIDERS.Gemini);
+    const llm = new LLM(PROVIDERS.OpenRouter);
     const res = await llm.llmService(query);
     return new Response(res);
   });
