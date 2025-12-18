@@ -1,24 +1,18 @@
-import figlet from 'figlet'; 
-import {LLM} from "./llm.ts";
-import { PROVIDERS } from './enum.ts';
-const server = Bun.serve({
-  port: 3000,
-  idleTimeout:60,
-  routes: {
-    "/": () => new Response('Bun!'),
+import Elysia from 'elysia';
+import { LLMController } from './controller.ts';
+import swagger from '@elysiajs/swagger';
+import { cors } from '@elysiajs/cors'
 
-    "/figlet": () => { 
-      const body = figlet.textSync('Bun!'); 
-      return new Response(body); 
-    },
-
-    "/chat/:query" : async req => {
-        const {query} = req.params;
-        const llm = new LLM(PROVIDERS.Gemini);
-        const res = await llm.llmService(query);
-        return new Response(res);
+const server = new Elysia().use(cors({
+  origin: "*"
+})).use(swagger({
+  documentation: {
+    info: {
+      title: 'Finance Advisor API',
+      version: '1.0.0',
+      description: 'LLM-powered financial advisor API'
     }
   }
-});
+})).use(LLMController).listen(3000);
 
-console.log(`Listening on ${server.url}`);
+console.log(`Listening on ${server.server?.hostname}:${server.server?.port}`);
